@@ -1,14 +1,13 @@
 package com.lowPriceShop.LowPriceShop.Services;
 
-import com.lowPriceShop.LowPriceShop.DTO.UserDTO;
+import com.lowPriceShop.LowPriceShop.DTO.NewUserDTO;
 import com.lowPriceShop.LowPriceShop.Entities.Users;
 
 import java.util.List;
-import java.util.Map;
 
 public interface UserService {
 
-    Users addUser(UserDTO userDTO);
+    Users addUser(NewUserDTO newUserDTO);
 
     Users getUserById(Integer id);
 

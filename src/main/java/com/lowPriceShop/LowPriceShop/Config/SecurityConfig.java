@@ -47,7 +47,7 @@ public class SecurityConfig {
                         // Protected endpoints
 //                        .requestMatchers("/api/user/**", "/api/customer/profile").authenticated()
                                 .requestMatchers("/auth/**").permitAll()
-//                                .requestMatchers("/api/**").permitAll()
+                                .requestMatchers("/api/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .httpBasic(httpBasic -> {}); // Basic auth for testing (replace with JWT in production)

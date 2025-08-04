@@ -1,10 +1,11 @@
 package com.lowPriceShop.LowPriceShop.Controller;
 
-import com.lowPriceShop.LowPriceShop.DTO.UserDTO;
+import com.lowPriceShop.LowPriceShop.DTO.NewUserDTO;
 import com.lowPriceShop.LowPriceShop.Entities.Users;
 import com.lowPriceShop.LowPriceShop.ErrorHandling.ErrorResponse;
 import com.lowPriceShop.LowPriceShop.ErrorHandling.Exceptions.RoleException.RoleNotFoundException;
 import com.lowPriceShop.LowPriceShop.ErrorHandling.Exceptions.UserException.DuplicateEmailException;
+import com.lowPriceShop.LowPriceShop.ErrorHandling.Exceptions.UserException.PasswordNotMatchException;
 import com.lowPriceShop.LowPriceShop.ErrorHandling.Exceptions.UserException.UserNotFoundException;
 
 import com.lowPriceShop.LowPriceShop.Services.UserService;
@@ -27,11 +28,11 @@ public class UserController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> addUser(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<?> addUser(@RequestBody NewUserDTO newUserDTO) {
         try {
-            Users user = userService.addUser(userDTO);
+            Users user = userService.addUser(newUserDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(user);
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | PasswordNotMatchException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ErrorResponse("Bad Request", e.getMessage(), HttpStatus.BAD_REQUEST.value()));
         } catch (DuplicateEmailException e) {
@@ -40,7 +41,7 @@ public class UserController {
         }  catch (RoleNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ErrorResponse("Not Found", e.getMessage(), HttpStatus.NOT_FOUND.value()));
-        }  catch (Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ErrorResponse("Server Error", "An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR.value()));
         }
