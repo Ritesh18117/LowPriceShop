@@ -6,14 +6,14 @@ public class UserDTO {
     private String email;    // User's email
     private String password; // User's password
 
-    private Integer roleId;
+    private RoleEnum role;
     public UserDTO() {
     }
 
-    public UserDTO(String email, String password, Integer roleId) {
+    public UserDTO(String email, String password, RoleEnum roleId) {
         this.email = email;
         this.password = password;
-        this.roleId = roleId;
+        this.role = roleId;
     }
 
     public UserDTO(String email, String password) {
@@ -21,12 +21,12 @@ public class UserDTO {
         this.password = password;
     }
 
-    public Integer getRoleId() {
-        return roleId;
+    public RoleEnum getRole() {
+        return role;
     }
 
-    public void setRoleId(Integer roleId) {
-        this.roleId = roleId;
+    public void setRole(RoleEnum roleId) {
+        this.role = role;
     }
 
     public String getEmail() {

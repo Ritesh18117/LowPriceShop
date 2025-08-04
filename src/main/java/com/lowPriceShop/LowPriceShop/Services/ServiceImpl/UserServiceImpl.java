@@ -2,11 +2,12 @@ package com.lowPriceShop.LowPriceShop.Services.ServiceImpl;
 
 import com.lowPriceShop.LowPriceShop.DAO.RoleRepository;
 import com.lowPriceShop.LowPriceShop.DAO.UserRepository;
-import com.lowPriceShop.LowPriceShop.DTO.UserDTO;
+import com.lowPriceShop.LowPriceShop.DTO.NewUserDTO;
 import com.lowPriceShop.LowPriceShop.Entities.Role;
 import com.lowPriceShop.LowPriceShop.Entities.Users;
 import com.lowPriceShop.LowPriceShop.ErrorHandling.Exceptions.RoleException.RoleNotFoundException;
 import com.lowPriceShop.LowPriceShop.ErrorHandling.Exceptions.UserException.DuplicateEmailException;
+import com.lowPriceShop.LowPriceShop.ErrorHandling.Exceptions.UserException.PasswordNotMatchException;
 import com.lowPriceShop.LowPriceShop.ErrorHandling.Exceptions.UserException.UserNotFoundException;
 import com.lowPriceShop.LowPriceShop.Services.UserService;
 import jakarta.transaction.Transactional;
@@ -36,34 +37,41 @@ public class UserServiceImpl implements UserService {
         this.passwordEncoder = passwordEncoder;
     }
     @Override
-    public Users addUser(UserDTO userDTO) {
-        if (userDTO.getEmail() == null || userDTO.getEmail().isEmpty()) {
+    public Users addUser(NewUserDTO newUserDTO) {
+        if (newUserDTO.getEmail() == null || newUserDTO.getEmail().isEmpty()) {
             throw new IllegalArgumentException("Email is required");
         }
-        if (userDTO.getPassword() == null || userDTO.getPassword().isEmpty()) {
+        if (newUserDTO.getPassword() == null || newUserDTO.getPassword().isEmpty()) {
             throw new IllegalArgumentException("Password is required");
         }
-        if (userDTO.getRoleId() == null) {
-            throw new IllegalArgumentException("Role ID is required");
+
+
+        if (newUserDTO.getRole() == null) {
+            throw new IllegalArgumentException("Role is required");
         }
 
         // Check for duplicate email
-        if (userRepository.findByEmail(userDTO.getEmail()).isPresent()) {
-            throw new DuplicateEmailException("Email already in use: " + userDTO.getEmail());
+        if (userRepository.findByEmail(newUserDTO.getEmail()).isPresent()) {
+            throw new DuplicateEmailException("Email already in use: " + newUserDTO.getEmail());
         }
+
+//        if(!newUserDTO.getPassword().equals(newUserDTO.getConfirmPassword())){
+//            throw new PasswordNotMatchException("Password doesn't match!!");
+//        }
 
         // Create User entity
         Users user = new Users();
-        user.setEmail(userDTO.getEmail());
-        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        user.setEmail(newUserDTO.getEmail());
+        user.setPassword(passwordEncoder.encode(newUserDTO.getPassword()));
 
         user.setIsActive(true);
         user.setIsDeleted(false);
         user.setCreatedAt(LocalDateTime.now());
 
         // Fetch Role by ID
-        Role role = roleRepository.findById(userDTO.getRoleId())
-                .orElseThrow(() -> new RoleNotFoundException("Role not found with id: " + userDTO.getRoleId()));
+        Role role = roleRepository.findByRoleName(newUserDTO.getRole())
+                .orElseThrow(() -> new RoleNotFoundException("Role not found: " + newUserDTO.getRole()));
+
         user.setRole(role);
 
         // Save and return User
